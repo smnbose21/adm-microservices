@@ -4,6 +4,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.core.env.Environment;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -19,17 +22,29 @@ import com.cts.pss.model.SearchQuery;
 import com.cts.pss.service.FlightSearchService;
 
 @RestController
+@RefreshScope
 @RequestMapping("api/pss/search")
 @CrossOrigin
 public class FlightSearchRestController {
 
 	@Autowired
+	private Environment env;
+
+	@Autowired
 	private FlightSearchService searchService;
+	
+	@Value("${flight.lockdown}")
+	private String lockdown;
+	
+	
+	@GetMapping("/value")
+	public String findValue() {
+		return lockdown;
+	}
 
 	@GetMapping("/{origin}/{destination}/{flightDate}/{travellers}")
 	public List<Flight> findAllFlightsV1(@PathVariable String origin, @PathVariable String destination,
 			@PathVariable @DateTimeFormat(iso = ISO.DATE) LocalDate flightDate, @PathVariable int travellers) {
-
 		return searchService.findFlights(origin, destination, flightDate, travellers);
 	}
 

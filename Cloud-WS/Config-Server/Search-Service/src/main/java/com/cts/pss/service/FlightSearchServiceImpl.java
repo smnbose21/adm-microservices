@@ -18,8 +18,7 @@ public class FlightSearchServiceImpl implements FlightSearchService {
 	@Autowired
 	private FlightRepository flightDao;
 
-	
-	//Get invoked only when booking is done from Booking-Service
+	// Get invoked only when booking is done from Booking-Service
 	@Override
 	public void updateInventory(int id, int seats_booked) {
 
@@ -34,42 +33,36 @@ public class FlightSearchServiceImpl implements FlightSearchService {
 		System.out.println(">>>>>>> INVENTORY UPDATE COMPLETED <<<<<<");
 
 	}
-	
-	
-	//Get invoked only when booking is done from Booking-Service
-		@Override
-		public void updateRescheeduledFlightInventory(int flightId, int updated_seats) {
 
-			System.out.println(">>>>>>> SEARCH-SERVICE:::: SEARCHSERVICEIMPL <<<<<<<");
-			System.out.println(">>>>>>> UPDATING INVENTORY INFORMATION IN SEARCH-SERVICE");
+	// Get invoked only when booking is done from Booking-Service
+	@Override
+	public void updateRescheeduledFlightInventory(int flightId, int updated_seats) {
 
-			Flight flight = flightDao.findById(flightId).orElse(null);
-			Inventory inv = flight.getInventory();
-			inv.setAvailableSeats(inv.getAvailableSeats() + updated_seats);
-			flight.setInventory(inv);
-			flightDao.save(flight);
-			System.out.println(">>>>>>> INVENTORY UPDATE COMPLETED <<<<<<");
+		System.out.println(">>>>>>> SEARCH-SERVICE:::: SEARCHSERVICEIMPL <<<<<<<");
+		System.out.println(">>>>>>> UPDATING INVENTORY INFORMATION IN SEARCH-SERVICE");
 
-		}
-	
-	
-	
-	
-	
-		// Schedule a New Flight
-		@Override
-		public Flight scheduleNewFlight(Flight flight) {
-			return flightDao.save(flight);
+		Flight flight = flightDao.findById(flightId).orElse(null);
+		Inventory inv = flight.getInventory();
+		inv.setAvailableSeats(inv.getAvailableSeats() + updated_seats);
+		flight.setInventory(inv);
+		flightDao.save(flight);
+		System.out.println(">>>>>>> INVENTORY UPDATE COMPLETED <<<<<<");
 
-		}
-	
-	
-	
+	}
+
+	// Schedule a New Flight
+	@Override
+	public Flight scheduleNewFlight(Flight flight) {
+		return flightDao.save(flight);
+
+	}
+
 	@Override
 	public Flight findByOriginAndDestinationAndFlightDateAndFlightNumber(String origin, String destination,
 			LocalDate flightDate, String flightNumber) {
 		// TODO Auto-generated method stub
-		return flightDao.findByOriginAndDestinationAndFlightDateAndFlightNumber(origin, destination, flightDate, flightNumber);
+		return flightDao.findByOriginAndDestinationAndFlightDateAndFlightNumber(origin, destination, flightDate,
+				flightNumber);
 	}
 
 	@Override

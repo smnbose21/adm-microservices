@@ -1,6 +1,8 @@
 package com.cts.pss.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -15,15 +17,24 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cts.pss.entity.BookingRecord;
 import com.cts.pss.entity.Passenger;
 import com.cts.pss.model.SearchQuery;
-import com.cts.pss.service.BookingServiceImpl;
+import com.cts.pss.service.BookingService;
 
 @RestController
+@RefreshScope
 @RequestMapping("api/pss/booking")
 @CrossOrigin
 public class BookingRestController {
 
 	@Autowired
-	private BookingServiceImpl bookingService;
+	private BookingService bookingService;
+	
+	@Value("${booking.couponCode}")
+	private String couponCode;
+	
+	@GetMapping("/value")
+	public String findValue() {
+		return couponCode;
+	}
 
 	// Reschedule flight
 

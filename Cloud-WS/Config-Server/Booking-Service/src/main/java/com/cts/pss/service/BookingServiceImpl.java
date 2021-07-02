@@ -24,9 +24,11 @@ import com.cts.pss.model.CustomMessage;
 import com.cts.pss.model.SearchQuery;
 import com.cts.pss.repository.BookingRepository;
 import com.cts.pss.repository.CoPassengerRepository;
+import com.cts.pss.service.proxy.FareServiceProxy;
+import com.cts.pss.service.proxy.SearchServiceProxy;
 
 @Service
-public class BookingServiceImpl {
+public class BookingServiceImpl implements BookingService {
 
 	// Need Price of Flight
 	// Need Flight Details which is going to be booked
@@ -51,15 +53,20 @@ public class BookingServiceImpl {
 	private String fareSericeUrl = "http://localhost:8081/api/pss/fare";
 	private String searchServiceUrl = "http://localhost:8082/api/pss/search";
 	
+	@Autowired
+	private FareServiceProxy fareProxy;
 	
-	
+	@Autowired
+	private SearchServiceProxy flightProxy;
 
+	@Override
 	public Object bookFlight(SearchQuery query) {
 
-		Fare fare = rt.getForObject(fareSericeUrl + "/" + query.getFlightNumber() + "/" + query.getOrigin() + "/"
-				+ query.getDestination() + "/" + query.getFlightDate(), Fare.class);
-		Flight flight = rt.getForObject(searchServiceUrl + "/find/" + query.getOrigin() + "/" + query.getDestination()
-				+ "/" + query.getFlightDate() + "/" + query.getFlightNumber(), Flight.class);
+		Fare fare = fareProxy.getFare(query.getFlightNumber(), query.getOrigin(), query.getDestination(),
+				query.getFlightDate());
+		
+		Flight flight = flightProxy.findAllFlightsV2(query.getOrigin(), query.getDestination(), query.getFlightDate(),
+				query.getFlightNumber());
 		BookingRecord bookingRecord = null;
 		// booking process
 
@@ -101,6 +108,7 @@ public class BookingServiceImpl {
 	}
 	
 	
+	@Override
 	public Object bookFlightV1(int flightId,int travellers,Passenger passenger) {
 		System.out.println(">>>>>>>>>>> Service ");
 
@@ -148,6 +156,7 @@ public class BookingServiceImpl {
 
 	// delete booking by booking ID
 
+	@Override
 	public boolean deleteBookingById(int bookingId) {
 		if (bookingDao.existsById(bookingId)) {
 			bookingDao.deleteById(bookingId);
@@ -158,6 +167,7 @@ public class BookingServiceImpl {
 	
 	
 	//cancel booking for selected passengers only
+	@Override
 	public BookingRecord customCancelBooking(int booingId,List<CoPassenger> coPassengers) {
 		
 		//against to whose booking id Co-Passengers have to delete ?
@@ -211,12 +221,14 @@ public class BookingServiceImpl {
 
 	// get Booking Data by ID
 
+	@Override
 	public BookingRecord getBookingDetails(int bookingId) {
 		return bookingDao.findById(bookingId).orElse(null);
 	}
 
 	// Reschedule flight
 
+	@Override
 	public BookingRecord rescheduleBooking(int bookingId, int flightId) {
 
 		BookingRecord bookingRecord = getBookingDetails(bookingId);

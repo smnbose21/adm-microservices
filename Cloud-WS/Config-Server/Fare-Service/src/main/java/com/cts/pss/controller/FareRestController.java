@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -20,6 +22,7 @@ import com.cts.pss.model.SearchQuery;
 import com.cts.pss.service.FareService;
 
 @RestController
+@RefreshScope
 @RequestMapping("api/pss/fare")
 @CrossOrigin
 public class FareRestController {
@@ -27,6 +30,14 @@ public class FareRestController {
 	@Autowired
 	private FareService fareService;
 	
+	@Value("${fare.discount}")
+	private String discount;
+	
+	
+	@GetMapping("/value")
+	public String findValue() {
+		return discount;
+	}
 	
 	
 	@PostMapping
